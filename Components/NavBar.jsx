@@ -1,9 +1,8 @@
 import { Text, View, TouchableNativeFeedback, Keyboard } from "react-native";
 import { styled } from "nativewind";
 import { TabView, Tab } from "@rneui/base";
-
 import HomeView from "./HomeView";
-import SearchBar from "./SearchBar";
+import SearchView from "./SearchView";
 import Profile from "./ProfileView";
 import { NavigationContainer } from "@react-navigation/native";
 import { useState } from "react";
@@ -66,12 +65,17 @@ export default function NavBar(props) {
             style={{
               backgroundColor: "transparent",
               width: "100%",
-              paddingHorizontal: "3%",
             }}
           >
-            <View>
-              <SearchBar setLoading={props.setLoading} />
-            </View>
+            {index == 1 ? ( 
+              <NavigationContainer theme={myTheme}>
+                <View className="h-[100%]">
+                  <SearchView/>
+                </View>
+              </NavigationContainer>
+            ) : (
+              <></>
+            )}
           </TabView.Item>
           <TabView.Item
             style={{

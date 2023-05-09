@@ -8,6 +8,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useRef, useState, memo, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import Loading from "./Loading";
+import SearchBar from "./SearchBar";
 const config = {
   animation: "spring",
   config: {
@@ -20,13 +21,14 @@ const config = {
   },
 };
 
+
+
 const MyGoBackBtn = (props) => {
   return (
     <>
       <Pressable
         className="px-5 justify-center"
         onPress={() => {
-          props.setVisible(true);
           props.navigation.pop();
         }}
       >
@@ -36,15 +38,44 @@ const MyGoBackBtn = (props) => {
   );
 };
 
-const HomeStack = createStackNavigator();
+const SearchStack = createStackNavigator();
 export default (props) => {
   const [data, setData] = useState({});
   const [headerVisibility, setHeaderVisibility] = useState();
-  const [visible, setVisible] = useState(true);
+  const [fetchLoading, setFetchLoading] = useState(true)
+  const [search, setSearch] = useState("");
   const scrollOffset = useRef(0);
   const flashListRef = useRef();
 
+  const fetchData = async (setData, query) => {
+    setFetchLoading(true)
+    let Data = [];
+    try {
+      let response = await fetch(
+        `https://game-browser-api.vegetaxxsan.repl.co/games/${query}`
+      );
+      let myData = await response.json();
+      Data = myData.results
+    } catch (e) {
+      console.log(e);
+    }
+    setData(Data);
+    setFetchLoading(false)
+  
+  };
+ 
+
+  useEffect(()=>{
+    if(search!='')
+    fetchData(setData,search)
+  },[search])
+
   const CardList = ({ navigation }) => {
+    if (search == "") return <>
+    {/* <SearchBar search={search} setSearch={setSearch} setData={setData}/> */}
+    </>;
+    if(fetchLoading)
+    return <Loading loading={fetchLoading}/>
     const [loading, setLoading] = useState(true);
     function renderItem({ item, index }) {
       return (
@@ -57,13 +88,14 @@ export default (props) => {
           platforms={item.parent_platforms}
           genres={item.genres}
           navigation={navigation}
-          setVisible={setVisible}
           setData={setData}
         />
       );
     }
+    console.log(search)
     return (
       <>
+
         <View
           style={{
             backgroundColor: "#181920",
@@ -75,14 +107,13 @@ export default (props) => {
         >
           <FlashList
             ref={(ref) => (flashListRef.current = ref)}
-            data={props.Data}
+            data={data}
             renderItem={renderItem}
-            estimatedItemSize={props.Data.length}
+            estimatedItemSize={data.length}
             onScroll={(e) => {
               scrollOffset.current = e.nativeEvent.contentOffset.y;
             }}
             onLoad={() => {
-              
               setTimeout(() => {
                 setLoading(false);
                 flashListRef.current.scrollToOffset({
@@ -98,7 +129,9 @@ export default (props) => {
   };
   return (
     <>
-      <HomeStack.Navigator
+        <SearchBar search={search} setSearch={setSearch} setData={setData}/>
+      <Text className='text-white text-xl'>Search results for {search}</Text>
+      <SearchStack.Navigator
         initialRouteName="home"
         screenOptions={{
           detachPreviousScreen: false,
@@ -106,28 +139,21 @@ export default (props) => {
           headerMode: "float",
         }}
       >
-        <HomeStack.Screen
+        <SearchStack.Screen
           name="home"
           component={CardList}
           options={{
-            title: (
-              <Title>
-                Trending <FontAwesome5 name="fire" size={28} color="#f54545" />
-              </Title>
-            ),
-
-            headerStyle: { backgroundColor: "#181920" },
-            headerTitleAlign: "center",
+            headerShown: false,
             transitionSpec: { open: config, close: config },
             presentation: "modal",
           }}
         />
-        <HomeStack.Screen
+        <SearchStack.Screen
           name="detail"
           options={({ navigation }) => ({
             title: <Title>{data.title}</Title>,
-            headerStyle: { backgroundColor: "#181920"},
-            headerLeftContainerStyle:{width:'100%'},
+            headerStyle: { backgroundColor: "#181920" },
+            headerLeftContainerStyle: { width: "100%" },
             headerMode: "float",
             headerTitleAlign: "center",
             headerShown: headerVisibility,
@@ -135,7 +161,6 @@ export default (props) => {
             headerLeft: () => (
               <MyGoBackBtn
                 navigation={navigation}
-                setVisible={setVisible}
                 flashListRef={flashListRef}
               />
             ),
@@ -148,8 +173,8 @@ export default (props) => {
               headerVisibility={headerVisibility}
             />
           )}
-        </HomeStack.Screen>
-      </HomeStack.Navigator>
+        </SearchStack.Screen>
+      </SearchStack.Navigator>
     </>
   );
 };
