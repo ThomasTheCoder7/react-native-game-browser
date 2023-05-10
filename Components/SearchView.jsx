@@ -4,11 +4,11 @@ import Detail from "./Detail";
 import Title from "./Title";
 import { createStackNavigator } from "@react-navigation/stack";
 import Card from "./Card";
-import { FontAwesome5 } from "@expo/vector-icons";
-import { useRef, useState, memo, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import Loading from "./Loading";
 import SearchBar from "./SearchBar";
+
 const config = {
   animation: "spring",
   config: {
@@ -21,15 +21,13 @@ const config = {
   },
 };
 
-
-
 const MyGoBackBtn = (props) => {
   return (
     <>
       <Pressable
         className="px-5 justify-center"
         onPress={() => {
-          props.navigation.pop();
+          props.navigation.navigate('home');
         }}
       >
         <Ionicons name="arrow-back" size={26} color="#ffffff" />
@@ -42,40 +40,39 @@ const SearchStack = createStackNavigator();
 export default (props) => {
   const [data, setData] = useState({});
   const [headerVisibility, setHeaderVisibility] = useState();
-  const [fetchLoading, setFetchLoading] = useState(true)
+  const [fetchLoading, setFetchLoading] = useState(true);
   const [search, setSearch] = useState("");
   const scrollOffset = useRef(0);
   const flashListRef = useRef();
 
   const fetchData = async (setData, query) => {
-    setFetchLoading(true)
+    setFetchLoading(true);
     let Data = [];
     try {
       let response = await fetch(
         `https://game-browser-api.vegetaxxsan.repl.co/games/${query}`
       );
       let myData = await response.json();
-      Data = myData.results
+      Data = myData.results;
     } catch (e) {
       console.log(e);
     }
     setData(Data);
-    setFetchLoading(false)
-  
+    setFetchLoading(false);
   };
- 
 
-  useEffect(()=>{
-    if(search!='')
-    fetchData(setData,search)
-  },[search])
+  useEffect(() => {
+    if (search != "") fetchData(setData, search);
+  }, [search]);
 
   const CardList = ({ navigation }) => {
-    if (search == "") return <>
-    {/* <SearchBar search={search} setSearch={setSearch} setData={setData}/> */}
-    </>;
-    if(fetchLoading)
-    return <Loading loading={fetchLoading}/>
+    if (search == "")
+      return (
+        <>
+          {/* <SearchBar search={search} setSearch={setSearch} setData={setData}/> */}
+        </>
+      );
+    if (fetchLoading) return <Loading loading={fetchLoading} />;
     const [loading, setLoading] = useState(true);
     function renderItem({ item, index }) {
       return (
@@ -92,10 +89,9 @@ export default (props) => {
         />
       );
     }
-    console.log(search)
+
     return (
       <>
-
         <View
           style={{
             backgroundColor: "#181920",
@@ -129,8 +125,8 @@ export default (props) => {
   };
   return (
     <>
-        <SearchBar search={search} setSearch={setSearch} setData={setData}/>
-      <Text className='text-white text-xl'>Search results for {search}</Text>
+      <SearchBar search={search} setSearch={setSearch} setData={setData} />
+      <Text className="text-white text-xl">Search results for {search}</Text>
       <SearchStack.Navigator
         initialRouteName="home"
         screenOptions={{

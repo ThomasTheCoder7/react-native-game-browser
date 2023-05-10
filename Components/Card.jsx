@@ -70,7 +70,7 @@ const Card = (props) => {
   const cardPress = () => {
     let myData = { title: props.title };
     props.setData(myData);
-    props.navigation.push("detail");
+    props.navigation.navigate("detail");
   };
 
   const formatDate = (date) => {

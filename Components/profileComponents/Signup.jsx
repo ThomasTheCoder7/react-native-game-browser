@@ -57,7 +57,7 @@ export default memo(({navigation}) => {
           buttonStyle={{
             borderRadius: 6,
             backgroundColor: "#8F43EE",
-            width: "65%",
+            width: "100%",
           }}
           titleStyle={{
             flex: 1,
@@ -65,8 +65,12 @@ export default memo(({navigation}) => {
             alignItems: "center",
             fontWeight: "bold",
             fontSize: 20,
+
           }}
-          title={"Sign up"}
+          containerStyle={{
+            width:'60%'
+          }}
+            title={"Sign up"}
         />
         <View className="pt-5 flex justify-center items-center w-full gap-4">
           <Text className="text-gray-400">Already have an account ?</Text>

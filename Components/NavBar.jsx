@@ -95,7 +95,7 @@ export default function NavBar(props) {
 
       <StyledView
         className="absolute bottom-0 flex flex-row items-end bg-[#252733]
-       justify-between px-5 rounded-t-2xl w-full h-1/12 pb-1"
+       justify-between px-5 rounded-t-2xl w-full h-[8%] pb-1 items-center"
       >
         <Tab
           value={index}

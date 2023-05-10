@@ -41,11 +41,15 @@ export default memo(({ navigation }) => {
         </View>
 
         <StyledButton
-          className="text-center"
+          className="text-center w"
           buttonStyle={{
             borderRadius: 6,
             backgroundColor: "#8F43EE",
-            width: "65%",
+            width: "100%",
+            
+          }}
+          containerStyle={{
+            width:'60%'
           }}
           titleStyle={{
             flex: 1,
