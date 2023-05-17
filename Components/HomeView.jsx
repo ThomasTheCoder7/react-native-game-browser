@@ -26,7 +26,6 @@ const MyGoBackBtn = (props) => {
       <Pressable
         className="px-5 justify-center"
         onPress={() => {
-          props.setVisible(true);
           props.navigation.pop();
         }}
       >
@@ -40,7 +39,6 @@ const HomeStack = createStackNavigator();
 export default (props) => {
   const [data, setData] = useState({});
   const [headerVisibility, setHeaderVisibility] = useState();
-  const [visible, setVisible] = useState(true);
   const scrollOffset = useRef(0);
   const flashListRef = useRef();
 
@@ -57,7 +55,7 @@ export default (props) => {
           platforms={item.parent_platforms}
           genres={item.genres}
           navigation={navigation}
-          setVisible={setVisible}
+          id={item.id}
           setData={setData}
         />
       );
@@ -69,7 +67,7 @@ export default (props) => {
             backgroundColor: "#181920",
             borderWidth: 0,
             width: Dimensions.get("screen").width,
-            height: "100%",
+            height: "98%",
             flexGrow: 0,
           }}
         >
@@ -85,9 +83,12 @@ export default (props) => {
               
               setTimeout(() => {
                 setLoading(false);
-                flashListRef.current.scrollToOffset({
-                  offset: scrollOffset.current,
-                });
+                try{
+
+                  flashListRef.current.scrollToOffset({
+                    offset: scrollOffset.current,
+                  });
+                }catch(e){}
               }, 120);
             }}
           />
@@ -135,7 +136,6 @@ export default (props) => {
             headerLeft: () => (
               <MyGoBackBtn
                 navigation={navigation}
-                setVisible={setVisible}
                 flashListRef={flashListRef}
               />
             ),
@@ -145,6 +145,8 @@ export default (props) => {
             <Detail
               {...props}
               setHeaderVisibility={setHeaderVisibility}
+              setDetailData={setData}
+              detailData={data}
               headerVisibility={headerVisibility}
             />
           )}

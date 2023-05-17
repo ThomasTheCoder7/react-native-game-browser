@@ -27,7 +27,7 @@ const MyGoBackBtn = (props) => {
       <Pressable
         className="px-5 justify-center"
         onPress={() => {
-          props.navigation.navigate('home');
+          props.navigation.navigate("home");
         }}
       >
         <Ionicons name="arrow-back" size={26} color="#ffffff" />
@@ -39,8 +39,9 @@ const MyGoBackBtn = (props) => {
 const SearchStack = createStackNavigator();
 export default (props) => {
   const [data, setData] = useState({});
+  const [detailData, setDetailData] = useState([]);
   const [headerVisibility, setHeaderVisibility] = useState();
-  const [fetchLoading, setFetchLoading] = useState(true);
+  const [fetchLoading, setFetchLoading] = useState(false);
   const [search, setSearch] = useState("");
   const scrollOffset = useRef(0);
   const flashListRef = useRef();
@@ -66,17 +67,12 @@ export default (props) => {
   }, [search]);
 
   const CardList = ({ navigation }) => {
-    if (search == "")
-      return (
-        <>
-          {/* <SearchBar search={search} setSearch={setSearch} setData={setData}/> */}
-        </>
-      );
-    if (fetchLoading) return <Loading loading={fetchLoading} />;
     const [loading, setLoading] = useState(true);
+
     function renderItem({ item, index }) {
       return (
         <Card
+          id={item.id}
           url={item.background_image}
           esrb_rating={item.esrb_rating}
           title={item.name}
@@ -85,7 +81,7 @@ export default (props) => {
           platforms={item.parent_platforms}
           genres={item.genres}
           navigation={navigation}
-          setData={setData}
+          setData={setDetailData}
         />
       );
     }
@@ -97,10 +93,11 @@ export default (props) => {
             backgroundColor: "#181920",
             borderWidth: 0,
             width: Dimensions.get("screen").width,
-            height: "100%",
+            height: "98%",
             flexGrow: 0,
           }}
         >
+         {search.length>0?<Title><Text>Search results for "{search}"</Text></Title>:<></>}
           <FlashList
             ref={(ref) => (flashListRef.current = ref)}
             data={data}
@@ -112,21 +109,22 @@ export default (props) => {
             onLoad={() => {
               setTimeout(() => {
                 setLoading(false);
-                flashListRef.current.scrollToOffset({
-                  offset: scrollOffset.current,
-                });
+                try{
+
+                  flashListRef.current.scrollToOffset({
+                    offset: scrollOffset.current,
+                  });
+                }catch(e){}
               }, 120);
             }}
           />
-          <Loading loading={loading} />
+          <Loading loading={(loading || fetchLoading) && search != ""} />
         </View>
       </>
     );
   };
   return (
     <>
-      <SearchBar search={search} setSearch={setSearch} setData={setData} />
-      <Text className="text-white text-xl">Search results for {search}</Text>
       <SearchStack.Navigator
         initialRouteName="home"
         screenOptions={{
@@ -139,7 +137,13 @@ export default (props) => {
           name="home"
           component={CardList}
           options={{
-            headerShown: false,
+            
+            headerTitle:(props) => <SearchBar search={search} setSearch={setSearch} />,
+            
+            headerStyle: { backgroundColor: "#181920" },
+            headerTitleContainerStyle:{justifyContent:'center', width:'100%', marginTop:10, paddingHorizontal:20},
+            headerTitleAlign: "center",
+            headerTitleStyle:{width:'100%'},
             transitionSpec: { open: config, close: config },
             presentation: "modal",
           }}
@@ -147,7 +151,7 @@ export default (props) => {
         <SearchStack.Screen
           name="detail"
           options={({ navigation }) => ({
-            title: <Title>{data.title}</Title>,
+            title: <Title>{detailData.title}</Title>,
             headerStyle: { backgroundColor: "#181920" },
             headerLeftContainerStyle: { width: "100%" },
             headerMode: "float",
@@ -165,6 +169,8 @@ export default (props) => {
           {(props) => (
             <Detail
               {...props}
+              setDetailData={setDetailData}
+              detailData={detailData}
               setHeaderVisibility={setHeaderVisibility}
               headerVisibility={headerVisibility}
             />
