@@ -152,7 +152,6 @@ export default (props) => {
         </View>
         </ScrollView>
 
-      <CommentsModal/>
       </View>
     </KeyboardAvoidingView>
   );
